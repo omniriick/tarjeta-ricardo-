@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarjeta de Presentación Digital Smile Factory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilo para la fuente Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0; /* Un fondo suave para que la tarjeta destaque */
+            margin: 0;
+            padding: 20px; /* Espacio para la tarjeta en pantallas pequeñas */
+            box-sizing: border-box;
+        }
+
+        /* Contenedor principal de la tarjeta para el efecto 3D */
+        .card-container {
+            width: 340px; /* Ancho aproximado de una tarjeta de presentación digital (aprox. 8.5 cm x 5.5 cm) */
+            height: 220px; /* Alto aproximado de una tarjeta de presentación digital */
+            perspective: 1000px; /* Perspectiva para el efecto 3D */
+            cursor: pointer;
+            border-radius: 12px; /* Bordes redondeados para el contenedor */
+        }
+
+        /* La tarjeta en sí, que contendrá el anverso y el reverso */
+        .business-card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d; /* Permite que los elementos hijos se posicionen en 3D */
+            transition: transform 0.8s; /* Transición suave para el volteo */
+            border-radius: 12px; /* Bordes redondeados para la tarjeta */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+        }
+
+        /* Clase para voltear la tarjeta */
+        .business-card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        /* Estilos comunes para anverso y reverso */
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden; /* Oculta la cara trasera cuando no está visible */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 12px; /* Bordes redondeados para las caras */
+            overflow: hidden; /* Asegura que el contenido no se desborde */
+        }
+
+        /* Estilo del anverso */
+        .card-front {
+            background-color: #000000; /* Fondo negro sólido */
+            color: #ffffff;
+        }
+
+        /* Estilo del reverso */
+        .card-back {
+            background-color: #FFFFFF; /* Fondo blanco */
+            color: #000000;
+            transform: rotateY(180deg); /* Gira el reverso 180 grados para que quede oculto inicialmente */
+            padding: 10px 15px; /* Reduje un poco el padding vertical */
+            box-sizing: border-box; /* Incluye el padding en el ancho/alto */
+            position: relative; /* Necesario para posicionar elementos hijos absolutamente */
+            display: flex; /* Usar flexbox para organizar las secciones principales */
+            flex-direction: column; /* Apilar las secciones verticalmente */
+            justify-content: center; /* Centra el contenido principal verticalmente */
+            align-items: flex-start; /* Alinea los elementos al inicio */
+        }
+
+        /* Estilo para el logo en el anverso */
+        .logo-image {
+            width: 150%; /* Aumentado al 150% del contenedor */
+            height: 150%; /* Aumentado al 150% del contenedor */
+            object-fit: contain; /* Asegura que la imagen se ajuste sin distorsionarse */
+            /* Centrar la imagen si es más grande que el contenedor */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Sección superior para el nombre */
+        .top-name-section {
+            width: 100%; /* Ocupa todo el ancho */
+            text-align: center; /* Centra el texto del nombre */
+            margin-bottom: 15px; /* Reduje un poco el margen inferior */
+        }
+
+        /* Estilo para el nombre */
+        .contact-name {
+            font-size: 1.4rem; /* Reducido ligeramente para una sola línea */
+            font-weight: 600; /* Semibold */
+            color: #000000; /* Nombre en negro */
+            white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+            overflow: hidden; /* Oculta el texto que se desborda */
+            text-overflow: ellipsis; /* Añade puntos suspensivos si el texto es demasiado largo */
+            display: inline-block; /* Permite aplicar overflow/text-overflow */
+            max-width: 100%; /* Asegura que el texto no se desborde del contenedor */
+        }
+
+        /* Sección inferior para QR y detalles de contacto */
+        .bottom-content-section {
+            width: 100%; /* Ocupa todo el ancho disponible */
+            display: flex; /* Usar flexbox para QR y detalles */
+            align-items: center; /* Alinea el QR y los detalles verticalmente */
+            justify-content: flex-start; /* Alinea al inicio */
+            padding-left: 15px; /* Ajuste para alinear con el inicio del texto */
+            padding-right: 15px; /* Ajuste para alinear con el final del texto */
+        }
+
+        /* Estilo para el código QR en el reverso */
+        .qr-code-image {
+            width: 70px; /* Reduje un poco el tamaño del QR */
+            height: 70px; /* Reduje un poco el tamaño del QR */
+            object-fit: contain; /* Asegura que la imagen se ajuste sin distorsionarse */
+            border-radius: 6px; /* Bordes redondeados para el QR */
+            flex-shrink: 0; /* Evita que el QR se encoja */
+            margin-right: 10px; /* Reduje un poco el espacio a la derecha del QR */
+        }
+
+        /* Estilo para el grupo de información de contacto (teléfono, correo, dirección) */
+        .contact-details-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Alinea el texto a la izquierda */
+            flex-grow: 1; /* Permite que la información ocupe el espacio restante */
+            min-width: 0; /* Permite que el contenido se encoja si es necesario */
+        }
+
+        .contact-detail {
+            font-size: 0.7rem; /* Mantuve el tamaño de fuente reducido */
+            font-weight: 400; /* Regular */
+            color: #333333; /* Gris oscuro para los detalles */
+            margin-bottom: 3px; /* Reduje un poco el margen inferior */
+            display: flex;
+            align-items: center;
+            white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+            overflow: hidden; /* Oculta el texto que se desborda */
+            text-overflow: ellipsis; /* Añade puntos suspensivos si el texto es demasiado largo */
+            width: 100%; /* Ocupa el 100% del ancho disponible en su contenedor */
+        }
+
+        /* Iconos opcionales (usando Font Awesome para el ejemplo) */
+        .contact-detail i {
+            margin-right: 5px; /* Reduje un poco el margen derecho del icono */
+            font-size: 0.9rem; /* Reduje un poco el tamaño del icono */
+            color: #32CD32; /* Color verde para los iconos */
+        }
+
+        /* Media queries para responsividad */
+        @media (max-width: 400px) {
+            .card-container {
+                width: 90vw; /* Adapta el ancho a la ventana */
+                height: calc(90vw * 5.5 / 8.5); /* Mantiene la proporción */
+            }
+
+            .logo-image {
+                width: 150%; /* Mantiene el 150% también en pantallas pequeñas */
+                height: 150%; /* Mantiene el 150% también en pantallas pequeñas */
+            }
+
+            .qr-code-image {
+                width: 55px; /* Reducir QR en pantallas pequeñas */
+                height: 55px; /* Reducir QR en pantallas pequeñas */
+                margin-right: 8px; /* Ajustar margen para pantallas pequeñas */
+            }
+
+            .contact-name {
+                font-size: 1.1rem; /* Aún más reducido para pantallas muy pequeñas */
+            }
+            .contact-detail {
+                font-size: 0.65rem; /* Aún más reducido para pantallas muy pequeñas */
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="card-container" onclick="this.querySelector('.business-card').classList.toggle('flipped')">
+        <div class="business-card">
+            <div class="card-face card-front">
+                <img src="https://i.imgur.com/ABzXkwA.png" alt="Logo Smile Factory" class="logo-image">
+            </div>
+
+            <div class="card-face card-back">
+                <div class="top-name-section">
+                    <div class="contact-name">D.T. Ricardo Barrera M.</div>
+                </div>
+                <div class="bottom-content-section">
+                    <img src="https://i.imgur.com/d0rN0cl.png" alt="QR WhatsApp" class="qr-code-image">
+                    <div class="contact-details-group">
+                        <div class="contact-detail">
+                            <i class="fas fa-phone-alt"></i> +56 9 5368 0922
+                        </div>
+                        <div class="contact-detail">
+                            <i class="fas fa-envelope"></i> contacto.smilefactory@gmail.com
+                        </div>
+                        <div class="contact-detail">
+                            <i class="fas fa-map-marker-alt"></i> Maipú 44, Oficina 210, Concepción
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
